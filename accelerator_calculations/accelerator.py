@@ -5,7 +5,7 @@ from .beam import *
 class cell():
     def __init__(self, cell_length):
         self.__cell_length = cell_length
-    
+
     def cell_length():
         return self.__cell_length
 
@@ -27,14 +27,18 @@ class accelerator():
         self.__circumference = circumference
         self.__max_B = max_dipole_field
 
+    def revolution_period(self, total_energy=None):
+        velocity = self.__beam.beta(total_energy) * self.__c
+        time_period = self.__circumference / velocity
+        return time_period
+
     def revolution_frequency(self, total_energy=None):
         '''
         if total_energy is specified this will be used instead of the
         total energy of the beam. This can be useful for investigating
         revolution frequencies for different energies.
         '''
-        velocity = self.__beam.beta(total_energy) * self.__c
-        time_period = self.__circumference / velocity
+        time_period = self.revolution_period(total_energy)
         return 1/time_period
 
     def rf_frequency(self, total_energy=None):
@@ -61,18 +65,18 @@ class accelerator():
         momentum = self.__beam.momentum(total_energy)
         charge = self.__beam.charge()
         return momentum / charge
-    
+
     def circumference(self):
         return self.__circumference
-    
+
     def accelerator_radius(self):
         return self.circumference() / (2*np.pi)
-    
+
     def filling_factor(self, max_energy):
         rho = self.bending_radius(max_energy)
         R = self.accelerator_radius()
         return rho / R
-    
+
     def num_dipoles_total(self, max_energy, dipole_length):
         rho = self.bending_radius(max_energy)
         bent_circumference = 2*np.pi * rho
